@@ -42,6 +42,9 @@
   <label>最低利用金額 (円)</label>
   <input type="number" id="coupon-min" placeholder="例: 500">
 
+  <label>有効期限（任意）</label>
+  <input type="date" id="coupon-expire">
+
   <button onclick="createCoupon()">保存してQRコードを発行</button>
 
   <div class="history-title">📦 作成済みクーポン一覧</div>
@@ -67,9 +70,10 @@
     const title = document.getElementById("coupon-title").value.trim();
     const discount = document.getElementById("coupon-discount").value;
     const minPay = document.getElementById("coupon-min").value;
+    const expire = document.getElementById("coupon-expire").value; // YYYY-MM-DD 形式
 
     if (!title || !discount || !minPay) {
-      alert("すべての項目を入力してください！");
+      alert("「有効期限」以外のすべての項目を入力してください！");
       return;
     }
 
@@ -77,18 +81,19 @@
       id: Date.now(),
       title: title,
       discount: discount,
-      minPay: minPay
+      minPay: minPay,
+      expire: expire || ""
     };
 
-    savedCoupons.unshift(newCoupon); // 先頭に追加
+    savedCoupons.unshift(newCoupon);
     saveAndRender();
 
-    // 入力欄を清掃
+    // 入力欄をクリア
     document.getElementById("coupon-title").value = '';
     document.getElementById("coupon-discount").value = '';
     document.getElementById("coupon-min").value = '';
+    document.getElementById("coupon-expire").value = '';
 
-    // 即座にQR表示
     showQr(newCoupon.id);
   }
 
@@ -103,7 +108,9 @@
     const coupon = savedCoupons.find(c => c.id === id);
     if (!coupon) return;
 
-    const qrData = `COUPON:${coupon.title}:${coupon.discount}:${coupon.minPay}`;
+    // 期限を含めたデータフォーマット
+    const expireStr = coupon.expire ? `:${coupon.expire}` : '';
+    const qrData = `COUPON:${coupon.title}:${coupon.discount}:${coupon.minPay}${expireStr}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}`;
 
     document.getElementById("modal-title").innerText = coupon.title;
@@ -130,7 +137,10 @@
     listEl.innerHTML = savedCoupons.map(c => `
       <div class="coupon-item">
         <div class="coupon-info">🎟️ ${c.title}</div>
-        <div class="coupon-detail">${c.discount}円OFF (${c.minPay}円以上で利用可)</div>
+        <div class="coupon-detail">
+          ${c.discount}円OFF (${c.minPay}円以上で利用可)
+          ${c.expire ? `<br><span style="color:#e63946;">📅 期限: ${c.expire}まで</span>` : ''}
+        </div>
         <div class="btn-group">
           <button class="btn-sm btn-show" onclick="showQr(${c.id})">QRを表示</button>
           <button class="btn-sm btn-del" onclick="deleteCoupon(${c.id})">削除</button>
