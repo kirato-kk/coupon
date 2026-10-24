@@ -27,7 +27,7 @@ button:hover { background: #d6002b; }
 
 /* モーダル表示 (QR拡大表示用) */
 .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content: center; align-items: center; }
-.modal-content { background:#fff; padding:20px; border-radius:16px; max-width:300px; text-align:center; }
+.modal-content { background:#fff; padding:20px; border-radius:16px; max-width:260px; text-align:center; }
 
 /* 共有ボタン用スタイル */
 .btn-share { background: #00b894; color: #fff; margin-top: 10px; }
@@ -60,17 +60,17 @@ button:hover { background: #d6002b; }
 <!-- QRポップアップ画面 -->
 <div id="qr-modal" class="modal" onclick="closeModal()">
 <div class="modal-content" onclick="event.stopPropagation()">
-<!-- 画像化対象のコンテナ -->
+<!-- 画像化対象のコンテナ（コンパクトサイズ） -->
 <div id="qr-capture-area" style="background: #fff; padding: 10px; border-radius: 8px;">
-<h3 id="modal-title" style="margin-top:0; color:#333; font-size:16px;"></h3>
+<h3 id="modal-title" style="margin-top:0; color:#333; font-size:15px;"></h3>
 <div id="modal-qr"></div>
 </div>
-<p style="font-size:12px; color:#666; margin-top:10px;">11Payのカメラで読み取ってください</p>
+<p style="font-size:11px; color:#666; margin-top:8px;">11Payのカメラで読み取ってください</p>
 
-<!-- 共有ボタン（QRの下、閉じるボタンの上） -->
-<button class="btn-sm btn-share" style="width:100%; padding:10px; font-size:14px;" onclick="shareCouponImage()">📤 このQRを共有する</button>
+<!-- 共有ボタン -->
+<button class="btn-sm btn-share" style="width:100%; padding:9px; font-size:13px;" onclick="shareCouponImage()">📤 このQRを共有する</button>
 
-<button onclick="closeModal()" style="margin-top:10px; padding:8px; width:100%; background:#666; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">閉じる</button>
+<button onclick="closeModal()" style="margin-top:8px; padding:7px; width:100%; background:#666; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">閉じる</button>
 </div>
 </div>
 
@@ -122,14 +122,14 @@ if (!coupon) return;
 
 const expireStr = coupon.expire ? `:${coupon.expire}` : '';
 const qrData = `COUPON:${coupon.title}:${coupon.discount}:${coupon.minPay}${expireStr}`;
-const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}`;
+// QRコードのサイズを小さめ（140x140）に変更
+const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(qrData)}`;
 
 document.getElementById("modal-title").innerText = coupon.title;
-document.getElementById("modal-qr").innerHTML = `<img src="${qrUrl}" width="220" height="220" style="border-radius:8px;" crossorigin="anonymous">`;
+document.getElementById("modal-qr").innerHTML = `<img src="${qrUrl}" width="140" height="140" style="border-radius:6px;" crossorigin="anonymous">`;
 document.getElementById("qr-modal").style.display = "flex";
 }
 
-// 文字とQRコードのセット画像を共有する関数
 function shareCouponImage() {
 const captureArea = document.getElementById("qr-capture-area");
 
